@@ -10,7 +10,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "ZIVA | Soccer Shin Guards",
   description: "Premium soccer shin guards with modern design and maximum protection",
-  generator: 'v0.dev',
   icons: {
     icon: '/icon.png',
   },

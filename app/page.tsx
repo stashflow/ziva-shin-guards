@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Features } from "./components/features"
 import { Testimonials } from "./components/testimonials"
 import { CTA } from "./components/cta"
+import { hasSeenSplash, markSplashAsSeen } from "./utils/splashScreen"
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
@@ -20,14 +21,27 @@ export default function Home() {
 
   useEffect(() => {
     if (!hasMounted) return;
-    // Simulate loading time
-    const timer = setTimeout(() => {
+    
+    // Check if user has seen splash before
+    const hasSeen = hasSeenSplash()
+    console.log('Home page - Has seen splash before:', hasSeen)
+    
+    if (hasSeen) {
+      // Skip loading and unlock screens if user has seen splash
       setLoading(false)
-    }, 2000)
-    return () => clearTimeout(timer)
+      setUnlocked(true)
+    } else {
+      // Show loading screen for first-time visitors
+      const timer = setTimeout(() => {
+        setLoading(false)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
   }, [hasMounted])
 
   const handleUnlock = () => {
+    console.log('Home page - Marking splash as seen')
+    markSplashAsSeen()
     setUnlocked(true)
   }
 
@@ -97,9 +111,14 @@ function Header() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.8 }}
     >
-      <motion.div className="text-3xl font-bold tracking-tighter" whileHover={{ scale: 1.05 }}>
-        ZIVA
-      </motion.div>
+      <Link href="/">
+        <motion.div 
+          className="text-3xl font-bold tracking-tighter text-black hover:text-gray-600 transition-colors cursor-pointer" 
+          whileHover={{ scale: 1.05 }}
+        >
+          ZIVA
+        </motion.div>
+      </Link>
       <nav>
         <ul className="flex space-x-8">
           {[
@@ -109,7 +128,7 @@ function Header() {
             { name: "Contact", href: "/contact" }
           ].map((item) => (
             <motion.li key={item.name} whileHover={{ y: -3 }} className="text-sm font-medium tracking-wide">
-              <Link href={item.href} className="hover:text-gray-600 transition-colors">
+              <Link href={item.href} className="text-black hover:text-gray-600 transition-colors">
                 {item.name}
               </Link>
             </motion.li>
@@ -191,14 +210,14 @@ function ProductCard({
           {title === "FAITH DRIVEN" ? (
             <img src="/images/ziva-shin-guard.png" alt={title} className="h-56 object-contain transform rotate-6" />
           ) : (
-            <div className="w-32 h-56 bg-white rounded-lg shadow-[0_0_40px_rgba(0,0,0,0.15)] transform rotate-6" />
+            <img src="/images/ziva-classic.png" alt={title} className="h-56 object-contain transform rotate-6" />
           )}
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold mb-2">{title}</h2>
+          <h2 className="text-2xl font-bold mb-2 text-black">{title}</h2>
           <p className="text-gray-600 mb-4">{description}</p>
-          <motion.div className="flex items-center text-sm font-medium" whileHover={{ x: 5 }}>
+          <motion.div className="flex items-center text-sm font-medium text-black" whileHover={{ x: 5 }}>
             EXPLORE <ChevronRight size={16} className="ml-1" />
           </motion.div>
         </div>
@@ -425,7 +444,7 @@ function ProductDetail({
 function Feature({ title, description }: { title: string; description: string }) {
   return (
     <div className="border-t border-gray-200 pt-4">
-      <h3 className="text-sm font-bold tracking-wider mb-1">{title}</h3>
+      <h3 className="text-sm font-bold tracking-wider mb-1 text-black">{title}</h3>
       <p className="text-sm text-gray-600">{description}</p>
     </div>
   )
@@ -448,7 +467,7 @@ function TechFeature({
       transition={{ delay, duration: 0.8 }}
       whileHover={{ y: -10 }}
     >
-      <h3 className="text-xl font-bold mb-4">{title}</h3>
+      <h3 className="text-xl font-bold mb-4 text-black">{title}</h3>
       <p className="text-gray-600">{description}</p>
     </motion.div>
   )
